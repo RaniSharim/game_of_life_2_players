@@ -1,0 +1,13 @@
+.board {
+    display:flex; 
+    flex-direction: row; 
+    margin-top: 100px;
+    margin-left: 25%;
+}
+
+.board_cell {
+    width: 75px;
+    height: 75px;
+    border: 1px black solid;
+    margin:-1px 0 0 -1px;
+}

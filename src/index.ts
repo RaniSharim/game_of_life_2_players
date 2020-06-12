@@ -1,3 +1,4 @@
-import { sayHello } from "./say-hello";
+import { UI } from "./ui";
 
-console.log(sayHello());
+const ui = new UI();
+ui.create_board();
