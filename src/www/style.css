@@ -10,4 +10,14 @@
     height: 75px;
     border: 1px black solid;
     margin:-1px 0 0 -1px;
+    background-color: white;
+    transition: background-color 0.5s ease;
+}
+
+.active_player_0 {
+    background-color: lightcoral;
+}
+
+.active_player_1 {
+    background-color: lightskyblue;
 }
