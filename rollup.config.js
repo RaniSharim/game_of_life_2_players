@@ -21,6 +21,6 @@ module.exports = {
             outputFolder:'docs'
         }),
         serve('docs'),
-        livereload('docs')
+        livereload()
     ]
 };

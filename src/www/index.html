@@ -8,7 +8,28 @@
     <body>        
         <div class="board">
             <div id="playboard" style="display:flex; flex-direction: column;"></div>
-            <div id="panel"></div>
+            <div id="panel" style="display:flex; flex-direction: column; padding-left:20px;">
+                <div class="panel">
+                    <div class="title">Current player</div>
+                    <div id="current_player" class="subtitle">  </div>
+                </div>
+
+                <div class="panel">
+                    <div class="title">Placements left</div> 
+                    <div><Span class="subtitle player_0">Red</Span><span id="player_0_placements" class="subtitle"></span></div>
+                    <div><Span class="subtitle player_1">Blue</Span><span id="player_1_placements" class="subtitle"></span></div>
+                </div>
+
+                <div class="panel">
+                    <div class="title">Score</div> 
+                    <div><Span class="subtitle player_0">Red</Span><span id="player_0_score" class="subtitle">0</span></div>
+                    <div><Span class="subtitle player_1">Blue</Span><span id="player_1_score" class="subtitle">0</span></div>
+                </div>
+
+                <div class="panel"> 
+                    <button class="button" id="pass_player_button">Pass</button>
+                </div>
+            </div>
         </div>
     </body>
     <script src="./js/bundle.js"></script>
