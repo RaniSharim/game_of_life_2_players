@@ -6,5 +6,4 @@ const board = new Board();
 const game = new Game(board);
 const ui = new UI(game);
 
-ui.create_board();
-document.getElementById("pass_player_button").onclick = () => ui.pass_player()
+ui.new_game();

@@ -21,12 +21,12 @@
     width: 50px;
 }
 
-.subtitle.player_0 {
+.player_0 {
    color: lightcoral;
 }
 
 
-.subtitle.player_1 {
+.player_1 {
     color: lightskyblue;
  }
 
@@ -40,6 +40,14 @@
     display: inline-block;
     font-size: 22px;
     cursor: pointer;
+}
+
+.button.blue {
+    background-color: royalblue;
+}
+
+.button:disabled {
+    background-color: gray;
 }
 
 .board_cell {
