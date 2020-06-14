@@ -77,6 +77,14 @@ export class Game {
         return this.game_state
     }
 
+    get_placements_left_for_current_player() {
+        let placements_left = this.left_to_place[this.current_player];
+        if (this.has_placement_limit && this.left_to_place_this_round[this.current_player] < this.left_to_place[this.current_player]) {
+            placements_left = this.left_to_place_this_round[this.current_player];
+        }
+        return placements_left;
+    }
+
     game_step() {
         let board_delta = this.get_board_delta();
         let old_state = <Cell[]>Object.assign([], this.board.play_area);

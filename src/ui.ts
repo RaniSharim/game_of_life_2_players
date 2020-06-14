@@ -78,6 +78,13 @@ export class UI {
 
         const save_config = document.getElementById("save_config");
         save_config.onclick = () => this.save_config()
+
+        const random_place_div = document.getElementById('random_place_div');
+        random_place_div.style.display = "block";
+
+        const random_place_button = document.getElementById("random_place_button");
+        random_place_button.removeAttribute("disabled");
+        random_place_button.onclick = () => this.random_placement();
     }
 
     save_config() {
@@ -130,6 +137,7 @@ export class UI {
 
         if (this.game.get_game_state() == GameState.Run) {
             document.getElementById("pass_player_button").setAttribute("disabled", "disabled");
+            document.getElementById("random_place_button").setAttribute("disabled", "disabled");
             this.run_game();
         }
         else if (this.game.get_game_state() == GameState.End) {
@@ -154,6 +162,7 @@ export class UI {
 
         if (this.game.get_game_state() == GameState.Place) {
             document.getElementById("pass_player_button").removeAttribute("disabled");
+            document.getElementById("random_place_button").removeAttribute("disabled");
             this.set_current_player_title();
             this.set_current_placements_left()
         }
@@ -164,6 +173,7 @@ export class UI {
 
     end_game() {
         document.getElementById("pass_player_button").style.display = "none";
+        document.getElementById("random_place_div").style.display = "none";
         document.getElementById("new_game_button").style.display = "inline-block";
 
         const score = this.game.score;
@@ -211,5 +221,24 @@ export class UI {
         const score = this.game.calculate_score();
         document.getElementById(`player_0_score`).innerHTML = score[0].toString();
         document.getElementById(`player_1_score`).innerHTML = score[1].toString();
+    }
+
+    random_placement() {
+        let number_to_place =  parseInt((<HTMLInputElement>document.getElementById("random_place_input")).value);
+        const max_can_place = this.game.get_placements_left_for_current_player();
+
+        if (number_to_place > max_can_place) {
+            number_to_place = max_can_place;
+        }
+
+        while (number_to_place > 0) {
+            const x = Math.floor(Math.random() * 10);
+            const y = Math.floor(Math.random() * 10);
+
+            if (this.game.can_place_at_xy(x, y)) {
+                this.cell_clicked(x, y);
+                number_to_place--;
+            }
+        }
     }
 }
