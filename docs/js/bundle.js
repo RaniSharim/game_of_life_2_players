@@ -74,6 +74,7 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
+    //# sourceMappingURL=board.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -227,13 +228,21 @@
         }
         pass_player() {
             if (!this.current_player_placed && !this.prev_player_placed) {
-                this.go_to_run();
+                this.calculate_score();
+                if (this.score[0] == 0 || this.score[1] == 0) {
+                    this.go_to_end_game();
+                }
+                else {
+                    this.go_to_run();
+                }
             }
-            this.prev_player_placed = this.current_player_placed;
-            this.current_player = 1 - this.current_player;
-            this.current_player_placed = false;
-            if (this.left_to_place[this.current_player] == 0) {
-                this.go_to_run();
+            else {
+                this.prev_player_placed = this.current_player_placed;
+                this.current_player = 1 - this.current_player;
+                this.current_player_placed = false;
+                if (this.left_to_place[this.current_player] == 0) {
+                    this.go_to_run();
+                }
             }
         }
         calculate_score() {
@@ -250,6 +259,7 @@
             return score;
         }
     }
+    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -355,6 +365,9 @@
                     document.getElementById("pass_player_button").setAttribute("disabled", "disabled");
                     this.run_game();
                 }
+                else if (this.game.get_game_state() == GameState.End) {
+                    this.end_game();
+                }
             });
         }
         sleep(ms) {
@@ -385,11 +398,11 @@
             const score = this.game.score;
             const placements_left = this.game.get_placements_left();
             const win_div = document.getElementById("winner");
-            if (score[0] + placements_left[0] > score[1] + placements_left[1]) {
+            if (score[0] > score[1]) {
                 win_div.innerHTML = "Red Wins!";
                 win_div.classList.add("player_0");
             }
-            else if (score[1] + placements_left[1] > score[0] + placements_left[0]) {
+            else if (score[1] > score[0]) {
                 win_div.innerHTML = "Blue Wins!";
                 win_div.classList.add("player_1");
             }
@@ -422,6 +435,7 @@
     const game = new Game(board);
     const ui = new UI(game);
     ui.new_game();
+    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map

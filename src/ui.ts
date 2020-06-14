@@ -98,6 +98,9 @@ export class UI {
             document.getElementById("pass_player_button").setAttribute("disabled", "disabled");
             this.run_game();
         }
+        else if (this.game.get_game_state() == GameState.End) {
+            this.end_game();
+        }
     }
 
     sleep(ms: number) {
@@ -132,11 +135,11 @@ export class UI {
         const placements_left = this.game.get_placements_left()
 
         const win_div = document.getElementById("winner");
-        if (score[0] + placements_left[0] > score[1] + placements_left[1]) {
+        if (score[0] > score[1]) {
             win_div.innerHTML = "Red Wins!";
             win_div.classList.add("player_0");
         } 
-        else if (score[1] + placements_left[1] > score[0] + placements_left[0]) {
+        else if (score[1] > score[0]) {
             win_div.innerHTML = "Blue Wins!";
             win_div.classList.add("player_1");
         }

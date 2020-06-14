@@ -187,15 +187,23 @@ export class Game {
     
     pass_player() {
         if (!this.current_player_placed && !this.prev_player_placed) {
-            this.go_to_run();
+            this.calculate_score();
+            
+            if (this.score[0] == 0 || this.score[1] == 0) {
+                this.go_to_end_game();
+            }
+            else {
+                this.go_to_run();
+            }
         }
-
-        this.prev_player_placed = this.current_player_placed;
-        this.current_player = 1-this.current_player;
-        this.current_player_placed = false;
-
-        if (this.left_to_place[this.current_player] == 0) {
-            this.go_to_run();
+        else {
+            this.prev_player_placed = this.current_player_placed;
+            this.current_player = 1-this.current_player;
+            this.current_player_placed = false;
+    
+            if (this.left_to_place[this.current_player] == 0) {
+                this.go_to_run();
+            }
         }
     }
 
