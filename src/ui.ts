@@ -64,6 +64,29 @@ export class UI {
                 instructions.style.display = "none"
             }
         }
+
+        const configuration_toggle = document.getElementById("configuration_toggle");
+        configuration_toggle.onclick = () => {
+            const configuration = document.getElementById('configuration');
+            if (configuration.style.display == "none") {
+                configuration.style.display = "block"
+            }
+            else {
+                configuration.style.display = "none"
+            }
+        }
+
+        const save_config = document.getElementById("save_config");
+        save_config.onclick = () => this.save_config()
+    }
+
+    save_config() {
+        const max_first_player_placements =  (<HTMLInputElement>document.getElementById("max_first_player_placements")).value;
+        const max_second_player_placements =  (<HTMLInputElement>document.getElementById("max_second_player_placements")).value;
+        const max_round_placements =  (<HTMLInputElement>document.getElementById("max_round_placements")).value;
+
+        this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements));
+        this.new_game();
     }
 
     cell_clicked(row: number, col: number) {
@@ -132,6 +155,7 @@ export class UI {
         if (this.game.get_game_state() == GameState.Place) {
             document.getElementById("pass_player_button").removeAttribute("disabled");
             this.set_current_player_title();
+            this.set_current_placements_left()
         }
         else if (this.game.get_game_state() == GameState.End) {
             this.end_game();
@@ -174,6 +198,13 @@ export class UI {
         const placements_left = this.game.get_placements_left();
         document.getElementById(`player_0_placements`).innerHTML = placements_left[0].toString();
         document.getElementById(`player_1_placements`).innerHTML = placements_left[1].toString();
+
+        if (this.game.has_placement_limit) {
+            const left_to_place_this_round = this.game.left_to_place_this_round;
+            document.getElementById(`player_0_placements`).innerHTML += ` (${left_to_place_this_round[0].toString()})`;
+            document.getElementById(`player_1_placements`).innerHTML += ` (${left_to_place_this_round[1].toString()})`;
+        }
+
     }
 
     set_current_score() {

@@ -12,11 +12,23 @@
                 <div id="instructions" style="display: none;">
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">1. Both players take turns placing tiles on the board, or pass. (Second player gets one extra tile).</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">2. Once both player pass (or can't place), the game of life begins!</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply, except the color of new tiles is decided by the majority of a tile's neighborhood color.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply - a "live" tile with less than 2, or more than 3 neighbors will "die".</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;an empty tile with 3 neighbors will become "alive", with it's color determined by its neighborhood colors.</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">4. Once one player is eradicated from the board, or the game detects a loop, both players can place tiles again.</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">5. The game ends if it stops and no player can place new tiles,</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or one player was eradicated from the board and can't place any more tiles.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;or one player was eradicated from the board and can't place any more tiles.</div>
+                </div>
+            </div>
+        </div>
+        <div class="board">
+            <div style="display:flex; flex-direction:column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
+                <div  id="configuration_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Configuration (click to expand)</div>
+                <div id="configuration" style="display: none;">
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for first player</span> <input type="number" value="20" id="max_first_player_placements" /></div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for second player</span> <input type="number" id="max_second_player_placements" value="21" /></div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Max placements per round (0 = unlimited)</span> <input type="number" value="0" id="max_round_placements"/></div>
+                    <div style="margin-bottom: 2px"><button id="save_config" class="button small">Save</button></div>
                 </div>
             </div>
         </div>    

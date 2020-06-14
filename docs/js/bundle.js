@@ -97,19 +97,30 @@
             this.game_state = GameState.InActive;
             this.prev_player_placed = true;
             this.current_player_placed = false;
+            this.has_placement_limit = false;
+            this.left_to_place_this_round = [0, 0];
+            this.max_first_player_placements = 20;
+            this.max_second_player_placements = 21;
+            this.max_round_placements = 0;
             this.board = board;
             this.init_game();
+        }
+        set_config(max_first_player_placements, max_second_player_placements, max_round_placements) {
+            this.max_first_player_placements = max_first_player_placements;
+            this.max_second_player_placements = max_second_player_placements;
+            this.max_round_placements = max_round_placements;
+            this.has_placement_limit = this.max_round_placements > 0;
         }
         init_game() {
             // Reset play area and history
             this.board.reset_play_area();
             this.old_states = [];
-            this.left_to_place = [20, 20];
+            this.left_to_place = [this.max_first_player_placements, this.max_first_player_placements];
             this.score = [0, 0];
             // Choose startring player at random
             this.current_player = Math.random() > 0.5 ? 0 : 1;
             // Other player gets another placement
-            this.left_to_place[1 - this.current_player] += 1;
+            this.left_to_place[1 - this.current_player] = this.max_second_player_placements;
             this.go_to_placement();
         }
         get_current_player() {
@@ -207,6 +218,9 @@
                 this.game_state = GameState.Place;
                 this.prev_player_placed = true;
                 this.current_player_placed = false;
+                if (this.has_placement_limit) {
+                    this.left_to_place_this_round = [this.max_round_placements, this.max_round_placements];
+                }
             }
         }
         go_to_run() {
@@ -218,10 +232,16 @@
             this.game_state = GameState.End;
         }
         can_place_at_xy(row, col) {
-            return this.game_state == GameState.Place && this.board.get_cell_xy(row, col) == Cell.Dead && this.left_to_place[this.current_player] > 0;
+            return this.game_state == GameState.Place &&
+                this.board.get_cell_xy(row, col) == Cell.Dead &&
+                this.left_to_place[this.current_player] > 0 &&
+                (!this.has_placement_limit || this.left_to_place_this_round[this.current_player] > 0);
         }
         place_at_xy(row, col) {
             this.left_to_place[this.current_player] -= 1;
+            if (this.has_placement_limit) {
+                this.left_to_place_this_round[this.current_player] -= 1;
+            }
             this.current_player_placed = true;
             this.board.set_cell_xy(row, col, this.current_player == 0 ? Cell.AlivePlayer0 : Cell.AlivePlayer1);
         }
@@ -239,7 +259,7 @@
                 this.prev_player_placed = this.current_player_placed;
                 this.current_player = 1 - this.current_player;
                 this.current_player_placed = false;
-                if (this.left_to_place[this.current_player] == 0) {
+                if (this.left_to_place[this.current_player] == 0 || (this.has_placement_limit && this.left_to_place_this_round[this.current_player] == 0)) {
                     this.go_to_run();
                 }
             }
@@ -335,6 +355,25 @@
                     instructions.style.display = "none";
                 }
             };
+            const configuration_toggle = document.getElementById("configuration_toggle");
+            configuration_toggle.onclick = () => {
+                const configuration = document.getElementById('configuration');
+                if (configuration.style.display == "none") {
+                    configuration.style.display = "block";
+                }
+                else {
+                    configuration.style.display = "none";
+                }
+            };
+            const save_config = document.getElementById("save_config");
+            save_config.onclick = () => this.save_config();
+        }
+        save_config() {
+            const max_first_player_placements = document.getElementById("max_first_player_placements").value;
+            const max_second_player_placements = document.getElementById("max_second_player_placements").value;
+            const max_round_placements = document.getElementById("max_round_placements").value;
+            this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements));
+            this.new_game();
         }
         cell_clicked(row, col) {
             console.log(`Clicked ${row} : ${col}`);
@@ -394,6 +433,7 @@
                 if (this.game.get_game_state() == GameState.Place) {
                     document.getElementById("pass_player_button").removeAttribute("disabled");
                     this.set_current_player_title();
+                    this.set_current_placements_left();
                 }
                 else if (this.game.get_game_state() == GameState.End) {
                     this.end_game();
@@ -431,6 +471,11 @@
             const placements_left = this.game.get_placements_left();
             document.getElementById(`player_0_placements`).innerHTML = placements_left[0].toString();
             document.getElementById(`player_1_placements`).innerHTML = placements_left[1].toString();
+            if (this.game.has_placement_limit) {
+                const left_to_place_this_round = this.game.left_to_place_this_round;
+                document.getElementById(`player_0_placements`).innerHTML += ` (${left_to_place_this_round[0].toString()})`;
+                document.getElementById(`player_1_placements`).innerHTML += ` (${left_to_place_this_round[1].toString()})`;
+            }
         }
         set_current_score() {
             const score = this.game.calculate_score();

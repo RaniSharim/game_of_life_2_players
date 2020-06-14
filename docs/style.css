@@ -42,6 +42,11 @@
     cursor: pointer;
 }
 
+.button.small {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
 .button.blue {
     background-color: royalblue;
 }
@@ -66,4 +71,26 @@
 
 .active_player_1 {
     background-color: lightskyblue;
+}
+
+input {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    border-radius: 0px;
+    background-color: white;
+    width: 20px;
+    font-size: 16px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

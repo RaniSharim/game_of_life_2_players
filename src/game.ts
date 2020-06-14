@@ -32,22 +32,35 @@ export class Game {
     
     prev_player_placed: boolean = true;
     current_player_placed: boolean = false;
+    has_placement_limit = false;
+    left_to_place_this_round = [0,0];
+
+    max_first_player_placements = 20;
+    max_second_player_placements = 21;
+    max_round_placements = 0;
 
     constructor(board: Board) {
         this.board = board;
         this.init_game();
     }
 
+    set_config(max_first_player_placements: number, max_second_player_placements: number, max_round_placements: number) {
+        this.max_first_player_placements = max_first_player_placements;
+        this.max_second_player_placements = max_second_player_placements;
+        this.max_round_placements = max_round_placements;
+        this.has_placement_limit = this.max_round_placements > 0;
+    }
+
     init_game() {
         // Reset play area and history
         this.board.reset_play_area();
         this.old_states = [];
-        this.left_to_place = [20, 20];
+        this.left_to_place = [this.max_first_player_placements, this.max_first_player_placements];
         this.score = [0,0];
         // Choose startring player at random
         this.current_player = Math.random() > 0.5 ? 0 : 1;
         // Other player gets another placement
-        this.left_to_place[1 - this.current_player] += 1;
+        this.left_to_place[1 - this.current_player] = this.max_second_player_placements;
 
         this.go_to_placement();
     }
@@ -161,7 +174,10 @@ export class Game {
         else {
             this.game_state = GameState.Place;
             this.prev_player_placed = true;
-            this.current_player_placed = false;    
+            this.current_player_placed = false;
+            if (this.has_placement_limit) {
+                this.left_to_place_this_round = [this.max_round_placements, this.max_round_placements]
+            } 
         }
     }
 
@@ -176,11 +192,17 @@ export class Game {
     }
 
     can_place_at_xy(row:number, col:number): boolean {
-        return this.game_state == GameState.Place && this.board.get_cell_xy(row, col) == Cell.Dead && this.left_to_place[this.current_player] > 0;
+        return this.game_state == GameState.Place && 
+               this.board.get_cell_xy(row, col) == Cell.Dead && 
+               this.left_to_place[this.current_player] > 0 && 
+               (!this.has_placement_limit || this.left_to_place_this_round[this.current_player] > 0);
     }
 
     place_at_xy(row:number, col:number) {        
         this.left_to_place[this.current_player] -= 1;
+        if (this.has_placement_limit) {
+            this.left_to_place_this_round[this.current_player] -= 1;
+        }
         this.current_player_placed = true;
         this.board.set_cell_xy(row, col, this.current_player == 0 ? Cell.AlivePlayer0 : Cell.AlivePlayer1)
     }
@@ -201,7 +223,7 @@ export class Game {
             this.current_player = 1-this.current_player;
             this.current_player_placed = false;
     
-            if (this.left_to_place[this.current_player] == 0) {
+            if (this.left_to_place[this.current_player] == 0 || (this.has_placement_limit && this.left_to_place_this_round[this.current_player] == 0)) {
                 this.go_to_run();
             }
         }
