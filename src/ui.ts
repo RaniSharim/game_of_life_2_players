@@ -53,6 +53,17 @@ export class UI {
         win_div.classList.remove('player_0');
         win_div.classList.remove('player_1');
         win_div.parentElement.style.display = "none";
+
+        const instructions_toggle = document.getElementById("instructions_toggle");
+        instructions_toggle.onclick = () => {
+            const instructions = document.getElementById('instructions');
+            if (instructions.style.display == "none") {
+                instructions.style.display = "block"
+            }
+            else {
+                instructions.style.display = "none"
+            }
+        }
     }
 
     cell_clicked(row: number, col: number) {

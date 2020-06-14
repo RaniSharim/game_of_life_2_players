@@ -1,8 +1,8 @@
 .board {
     display:flex; 
     flex-direction: row; 
-    margin-top: 100px;
     margin-left: 20%;
+    margin-top: 20px
 }
 
 .panel {

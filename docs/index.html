@@ -5,7 +5,21 @@
         <link rel="stylesheet" href="style.css">
         <title>Game of life, 2 player version</title>        
     </head>
-    <body>        
+    <body>    
+        <div class="board">
+            <div style="display:flex; flex-direction: column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
+                <div  id="instructions_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">How to play ? (click for instructions)</div>
+                <div id="instructions" style="display: none;">
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">1. Both players take turns placing tiles on the board, or pass.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">2. Once both player pass (or can't place), the game of life begins!</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply, except the color of new tiles is decided by the majority of a tile's neighborhood color.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">4. Once one player is eradicated from the board, or the game detects a loop, both players can place again.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">5. The game ends if it stops and no player can place new tiles,</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;or one player was eradicated from the board and can't place any more tiles.</div>
+                </div>
+            </div>
+        </div>    
         <div class="board">
             <div id="playboard" style="display:flex; flex-direction: column;"></div>
             <div id="panel" style="display:flex; flex-direction: column; padding-left:20px;">
@@ -35,7 +49,7 @@
                     <button class="button blue" id="new_game_button" style="display: none;">New Game</button>
                 </div>
             </div>
-        </div>
+        </div>       
     </body>
     <script src="./js/bundle.js"></script>
 </html>

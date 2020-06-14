@@ -74,7 +74,6 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
-    //# sourceMappingURL=board.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -259,7 +258,6 @@
             return score;
         }
     }
-    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -327,6 +325,16 @@
             win_div.classList.remove('player_0');
             win_div.classList.remove('player_1');
             win_div.parentElement.style.display = "none";
+            const instructions_toggle = document.getElementById("instructions_toggle");
+            instructions_toggle.onclick = () => {
+                const instructions = document.getElementById('instructions');
+                if (instructions.style.display == "none") {
+                    instructions.style.display = "block";
+                }
+                else {
+                    instructions.style.display = "none";
+                }
+            };
         }
         cell_clicked(row, col) {
             console.log(`Clicked ${row} : ${col}`);
@@ -435,7 +443,6 @@
     const game = new Game(board);
     const ui = new UI(game);
     ui.new_game();
-    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map
