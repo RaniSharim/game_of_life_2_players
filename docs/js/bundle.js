@@ -74,7 +74,6 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
-    //# sourceMappingURL=board.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -143,10 +142,12 @@
             });
             this.calculate_score();
             console.log(`Comparing states`);
+            // If board is empty and one player can't place, end game
             if ((this.left_to_place[0] == 0 && this.score[0] == 0) || (this.left_to_place[1] == 0 && this.score[1] == 0)) {
                 this.go_to_end_game();
             }
-            if (this.check_for_repeating_game_state()) {
+            // Pause game if board has only one color or is in a loop
+            if (this.score[0] == 0 || this.score[1] == 0 || this.check_for_repeating_game_state()) {
                 console.log(`Match found`);
                 this.go_to_placement();
                 if (this.left_to_place[0] > this.left_to_place[1]) {
@@ -249,7 +250,6 @@
             return score;
         }
     }
-    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -417,13 +417,11 @@
             document.getElementById(`player_1_score`).innerHTML = score[1].toString();
         }
     }
-    //# sourceMappingURL=ui.js.map
 
     const board = new Board();
     const game = new Game(board);
     const ui = new UI(game);
     ui.new_game();
-    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map

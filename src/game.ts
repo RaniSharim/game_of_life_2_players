@@ -83,12 +83,14 @@ export class Game {
 
         console.log(`Comparing states`)
 
+        // If board is empty and one player can't place, end game
         if ((this.left_to_place[0] == 0 && this.score[0] == 0) || (this.left_to_place[1] == 0 && this.score[1] == 0))
         {
             this.go_to_end_game();
         }
 
-        if (this.check_for_repeating_game_state()) {
+        // Pause game if board has only one color or is in a loop
+        if (this.score[0] == 0 || this.score[1] == 0 || this.check_for_repeating_game_state()) {
             console.log(`Match found`)
             this.go_to_placement();
             if (this.left_to_place[0] > this.left_to_place[1]) {
