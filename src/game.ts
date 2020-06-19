@@ -40,6 +40,8 @@ export class Game {
     max_round_placements = 0;
     board_size: number = 10;
 
+    undo_list: [number, number][];
+
     constructor() {
         this.board = new Board(this.board_size);
         this.init_game();
@@ -190,6 +192,7 @@ export class Game {
             this.game_state = GameState.Place;
             this.prev_player_placed = true;
             this.current_player_placed = false;
+            this.undo_list = new Array<[number, number]>();
             if (this.has_placement_limit) {
                 this.left_to_place_this_round = [this.max_round_placements, this.max_round_placements]
             } 
@@ -213,6 +216,10 @@ export class Game {
                (!this.has_placement_limit || this.left_to_place_this_round[this.current_player] > 0);
     }
 
+    can_undo_at_xy(row: number, col: number): boolean {
+        return this.undo_list.some(([r, c]) => r == row && c == col);
+    }
+
     place_at_xy(row:number, col:number) {        
         this.left_to_place[this.current_player] -= 1;
         if (this.has_placement_limit) {
@@ -220,9 +227,22 @@ export class Game {
         }
         this.current_player_placed = true;
         this.board.set_cell_xy(row, col, this.current_player == 0 ? Cell.AlivePlayer0 : Cell.AlivePlayer1)
+        this.undo_list.push([row, col]);
+    }
+
+    undo_at_xy(row: number, col: number) {
+        this.left_to_place[this.current_player] += 1;
+        if (this.has_placement_limit) {
+            this.left_to_place_this_round[this.current_player] += 1;
+        }
+
+        this.board.set_cell_xy(row, col, Cell.Dead);
+        this.undo_list = this.undo_list.filter(([r, c]) => r !== row || c !== col)
     }
     
     pass_player() {
+        this.undo_list = new Array<[number, number]>();
+
         if (!this.current_player_placed && !this.prev_player_placed) {
             this.calculate_score();
             

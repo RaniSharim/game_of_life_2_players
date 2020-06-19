@@ -82,6 +82,40 @@
     background-color: lightskyblue;
 }
 
+.selected_player_0 {
+    background-color: lightcoral;
+    opacity: 50%;
+}
+ 
+.selected_player_1 {
+    background-color: lightskyblue;
+    opacity: 50%;
+}
+
+@keyframes pulse_player_0 {
+    0% {
+        background-color: #ffffff;
+    }
+    50% {
+        background-color: lightcoral;
+    }
+    100% {
+        background-color: #ffffff;
+    }
+}
+
+@keyframes pulse_player_1 {
+    0% {
+        background-color: #ffffff;
+    }
+    50% {
+        background-color: lightskyblue;
+    }
+    100% {
+        background-color: #ffffff;
+    }
+}
+
 input {
     border: 0;
     background: none;

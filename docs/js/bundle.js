@@ -232,6 +232,7 @@
                 this.game_state = GameState.Place;
                 this.prev_player_placed = true;
                 this.current_player_placed = false;
+                this.undo_list = new Array();
                 if (this.has_placement_limit) {
                     this.left_to_place_this_round = [this.max_round_placements, this.max_round_placements];
                 }
@@ -251,6 +252,9 @@
                 this.left_to_place[this.current_player] > 0 &&
                 (!this.has_placement_limit || this.left_to_place_this_round[this.current_player] > 0);
         }
+        can_undo_at_xy(row, col) {
+            return this.undo_list.some(([r, c]) => r == row && c == col);
+        }
         place_at_xy(row, col) {
             this.left_to_place[this.current_player] -= 1;
             if (this.has_placement_limit) {
@@ -258,8 +262,18 @@
             }
             this.current_player_placed = true;
             this.board.set_cell_xy(row, col, this.current_player == 0 ? Cell.AlivePlayer0 : Cell.AlivePlayer1);
+            this.undo_list.push([row, col]);
+        }
+        undo_at_xy(row, col) {
+            this.left_to_place[this.current_player] += 1;
+            if (this.has_placement_limit) {
+                this.left_to_place_this_round[this.current_player] += 1;
+            }
+            this.board.set_cell_xy(row, col, Cell.Dead);
+            this.undo_list = this.undo_list.filter(([r, c]) => r !== row || c !== col);
         }
         pass_player() {
+            this.undo_list = new Array();
             if (!this.current_player_placed && !this.prev_player_placed) {
                 this.calculate_score();
                 if (this.score[0] == 0 || this.score[1] == 0) {
@@ -408,7 +422,13 @@
             if (this.game.can_place_at_xy(row, col)) {
                 this.game.place_at_xy(row, col);
                 const current_player = this.game.get_current_player();
-                this.change_color_at_xy(row, col, `active_player_${current_player}`);
+                this.change_color_at_xy(row, col, `selected_player_${current_player}`);
+                this.set_current_placements_left();
+                this.set_current_score();
+            }
+            else if (this.game.can_undo_at_xy(row, col)) {
+                this.game.undo_at_xy(row, col);
+                this.change_color_at_xy(row, col, '');
                 this.set_current_placements_left();
                 this.set_current_score();
             }
@@ -417,9 +437,18 @@
             const cell = document.getElementById(`${row}-${col}`);
             cell.classList.remove("active_player_0");
             cell.classList.remove("active_player_1");
+            cell.classList.remove("selected_player_0");
+            cell.classList.remove("selected_player_1");
             if (css_class) {
                 cell.classList.add(css_class);
             }
+        }
+        fix_selections() {
+            const current_player = this.game.get_current_player();
+            const placement_list = this.game.undo_list;
+            placement_list.forEach(([row, col]) => {
+                this.change_color_at_xy(row, col, `active_player_${current_player}`);
+            });
         }
         change_colors_many(diff) {
             for (let row = 0; row < this.board_size; row++) {
@@ -434,6 +463,7 @@
         }
         pass_player() {
             return __awaiter(this, void 0, void 0, function* () {
+                this.fix_selections();
                 this.game.pass_player();
                 this.set_current_player_title();
                 if (this.game.get_game_state() == GameState.Run) {
@@ -529,6 +559,7 @@
             }
         }
     }
+    //# sourceMappingURL=ui.js.map
 
     const game = new Game();
     const ui = new UI(game);

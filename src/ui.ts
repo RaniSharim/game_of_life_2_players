@@ -114,7 +114,13 @@ export class UI {
         if (this.game.can_place_at_xy(row, col)) {
             this.game.place_at_xy(row, col);
             const current_player = this.game.get_current_player();
-            this.change_color_at_xy(row, col, `active_player_${current_player}`);
+            this.change_color_at_xy(row, col, `selected_player_${current_player}`);
+            this.set_current_placements_left();
+            this.set_current_score();
+        }
+        else if (this.game.can_undo_at_xy(row, col)) {
+            this.game.undo_at_xy(row, col);
+            this.change_color_at_xy(row, col, '');
             this.set_current_placements_left();
             this.set_current_score();
         }
@@ -124,10 +130,21 @@ export class UI {
         const cell = document.getElementById(`${row}-${col}`);
         cell.classList.remove("active_player_0");
         cell.classList.remove("active_player_1");
+        cell.classList.remove("selected_player_0");
+        cell.classList.remove("selected_player_1");
         
         if (css_class) {
             cell.classList.add(css_class);      
         }
+    }
+
+    fix_selections() {
+        const current_player = this.game.get_current_player();
+        const placement_list = this.game.undo_list;
+
+        placement_list.forEach(([row, col]) => {
+            this.change_color_at_xy(row, col, `active_player_${current_player}`);
+        });        
     }
 
     change_colors_many(diff: CellDelta[]) {
@@ -144,6 +161,7 @@ export class UI {
     }
 
     async pass_player() {
+        this.fix_selections();
         this.game.pass_player();
         this.set_current_player_title();
 
