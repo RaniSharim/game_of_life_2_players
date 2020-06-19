@@ -74,7 +74,6 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
-    //# sourceMappingURL=board.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -403,12 +402,7 @@
                 for (let col = 0; col < this.board_size; col++) {
                     const dom_col = document.createElement("div");
                     dom_col.classList.add("board_cell");
-                    if (this.board_size == 10) {
-                        dom_col.classList.add("_10X10");
-                    }
-                    else {
-                        dom_col.classList.add("_15X15");
-                    }
+                    dom_col.classList.add(`_${this.board_size}X${this.board_size}`);
                     dom_col.id = `${row}-${col}`;
                     dom_col.onclick = () => this.cell_clicked(row, col);
                     dom_row.appendChild(dom_col);
@@ -609,8 +603,8 @@
                 number_to_place = max_can_place;
             }
             while (number_to_place > 0) {
-                const x = Math.floor(Math.random() * 10);
-                const y = Math.floor(Math.random() * 10);
+                const x = Math.floor(Math.random() * 1000) % this.board_size;
+                const y = Math.floor(Math.random() * 1000) % this.board_size;
                 if (this.game.can_place_at_xy(x, y)) {
                     this.cell_clicked(x, y);
                     number_to_place--;
@@ -618,12 +612,10 @@
             }
         }
     }
-    //# sourceMappingURL=ui.js.map
 
     const game = new Game();
     const ui = new UI(game);
     ui.new_game();
-    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map

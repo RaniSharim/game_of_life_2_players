@@ -33,12 +33,7 @@ export class UI {
                 const dom_col = document.createElement("div");
                 dom_col.classList.add("board_cell");
                 
-                if (this.board_size == 10) {
-                    dom_col.classList.add("_10X10");
-                }
-                else {
-                    dom_col.classList.add("_15X15");
-                }
+                dom_col.classList.add(`_${this.board_size}X${this.board_size}`);
 
                 dom_col.id = `${row}-${col}`;
                 dom_col.onclick = () => this.cell_clicked(row, col)
@@ -275,8 +270,8 @@ export class UI {
         }
 
         while (number_to_place > 0) {
-            const x = Math.floor(Math.random() * 10);
-            const y = Math.floor(Math.random() * 10);
+            const x = Math.floor(Math.random() * 1000) % this.board_size;
+            const y = Math.floor(Math.random() * 1000) % this.board_size;
 
             if (this.game.can_place_at_xy(x, y)) {
                 this.cell_clicked(x, y);

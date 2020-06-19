@@ -91,6 +91,11 @@
     height: 50px;
 }
 
+.board_cell._20X20 {
+    width: 35px;
+    height: 35px;
+}
+
 
 .active_player_0 {
     background-color: lightcoral;

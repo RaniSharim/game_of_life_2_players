@@ -14,6 +14,7 @@
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">2. Once both player pass (or can't place), the game of life begins!</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply - a "live" tile with less than 2, or more than 3 neighbors will "die".</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;an empty tile with 3 neighbors will become "alive", with it's color determined by its neighborhood colors.</div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;Two variations are available: either 3 cells of one color and one of the other, or a mix of both.</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">4. Once one player is eradicated from the board, or the game detects a loop, both players can place tiles again.</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">5. The game ends if it stops and no player can place new tiles,</div>
@@ -29,7 +30,7 @@
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for first player</span> <input type="number" value="20" id="max_first_player_placements" /></div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for second player</span> <input type="number" id="max_second_player_placements" value="21" /></div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Max placements per round (0 = unlimited)</span> <input type="number" value="0" id="max_round_placements"/></div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Board size</span><select id="board_size"><option value="10">10X10</option><option value="15">15X15</option></select></div>
+                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Board size</span><select id="board_size"><option value="10">10X10</option><option value="15">15X15</option><option value="20">20X20</option></select></div>
                     <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Birth rules</span><select id="birth_rules"><option value="normal">Normal (3 of any color)</option><option value="three_plus_one">3 of one color, 1 of other</option><option value="both">A mix of both</option></select></div>
                     <div style="margin-bottom: 2px"><button id="save_config" class="button small">Save</button></div>
                 </div>
