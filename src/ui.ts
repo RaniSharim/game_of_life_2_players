@@ -1,8 +1,9 @@
-import { BOARD_SIZE, Cell } from './board'
+import { Cell } from './board'
 import { Game, GameState, CellDelta } from './game'
 export class UI {
 
     game: Game;
+    board_size: number;
     
     constructor(game: Game) {
         this.game = game
@@ -10,6 +11,8 @@ export class UI {
 
     new_game() {
         this.game.init_game();
+
+        this.board_size = this.game.get_board_size();
 
         this.set_current_player_title();
         this.set_current_placements_left();
@@ -23,13 +26,21 @@ export class UI {
         const board = document.getElementById("playboard")
         board.innerHTML = '';
 
-        for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let row = 0; row < this.board_size; row++) {
             const dom_row = document.createElement("div");
             dom_row.style.display = "flex";
             dom_row.style.flexDirection = "row";
-            for (let col = 0; col < BOARD_SIZE; col++) {
+            for (let col = 0; col < this.board_size; col++) {
                 const dom_col = document.createElement("div");
-                dom_col.className = "board_cell";
+                dom_col.classList.add("board_cell");
+                
+                if (this.board_size == 10) {
+                    dom_col.classList.add("_10X10");
+                }
+                else {
+                    dom_col.classList.add("_15X15");
+                }
+
                 dom_col.id = `${row}-${col}`;
                 dom_col.onclick = () => this.cell_clicked(row, col)
                 dom_row.appendChild(dom_col)
@@ -91,8 +102,9 @@ export class UI {
         const max_first_player_placements =  (<HTMLInputElement>document.getElementById("max_first_player_placements")).value;
         const max_second_player_placements =  (<HTMLInputElement>document.getElementById("max_second_player_placements")).value;
         const max_round_placements =  (<HTMLInputElement>document.getElementById("max_round_placements")).value;
+        const board_size = (<HTMLSelectElement>document.getElementById("board_size")).value;
 
-        this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements));
+        this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size));
         this.new_game();
     }
 
@@ -119,9 +131,9 @@ export class UI {
     }
 
     change_colors_many(diff: CellDelta[]) {
-        for (let row = 0; row < BOARD_SIZE; row++) {
-            for (let col = 0; col < BOARD_SIZE; col++) {
-                const delta = diff[row*BOARD_SIZE + col];
+        for (let row = 0; row < this.board_size; row++) {
+            for (let col = 0; col < this.board_size; col++) {
+                const delta = diff[row*this.board_size + col];
                 if (delta == CellDelta.NoChange) {
                     continue;
                 }

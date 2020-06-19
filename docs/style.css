@@ -55,15 +55,24 @@
     background-color: gray;
 }
 
-.board_cell {
-    width: 75px;
-    height: 75px;
+.board_cell {   
     border: 1px black solid;
     margin:-1px 0 0 -1px;
     background-color: white;
     transition: background-color 0.2s ease;
     cursor: pointer;
 }
+
+.board_cell._10X10 {
+    width: 75px;
+    height: 75px;
+}
+
+.board_cell._15X15 {
+    width: 50px;
+    height: 50px;
+}
+
 
 .active_player_0 {
     background-color: lightcoral;
@@ -82,6 +91,17 @@ input {
     width: 20px;
     font-size: 16px;
 }
+
+select {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    border-radius: 0px;
+    background-color: white;
+    width: 100px;
+    font-size: 16px;
+}
+
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

@@ -1,5 +1,5 @@
 
-import { BOARD_SIZE, Cell, Board } from './board'
+import { Cell, Board } from './board'
 
 export enum CellDelta {
     NoChange,
@@ -38,17 +38,20 @@ export class Game {
     max_first_player_placements = 20;
     max_second_player_placements = 21;
     max_round_placements = 0;
+    board_size: number = 10;
 
-    constructor(board: Board) {
-        this.board = board;
+    constructor() {
+        this.board = new Board(this.board_size);
         this.init_game();
     }
 
-    set_config(max_first_player_placements: number, max_second_player_placements: number, max_round_placements: number) {
+    set_config(max_first_player_placements: number, max_second_player_placements: number, max_round_placements: number, board_size: number) {
         this.max_first_player_placements = max_first_player_placements;
         this.max_second_player_placements = max_second_player_placements;
         this.max_round_placements = max_round_placements;
         this.has_placement_limit = this.max_round_placements > 0;
+        this.board_size = board_size;
+        this.board = new Board(board_size);
     }
 
     init_game() {
@@ -63,6 +66,10 @@ export class Game {
         this.left_to_place[1 - this.current_player] = this.max_second_player_placements;
 
         this.go_to_placement();
+    }
+
+    get_board_size(): number {
+        return this.board_size;
     }
 
     get_current_player() : number {
@@ -133,7 +140,7 @@ export class Game {
             return false;
         }
         
-        for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+        for (let i = 0; i < this.board_size * this.board_size; i++) {
             if (state1.board[i] != state2.board[i]) { 
                 return false;
             }
@@ -164,8 +171,8 @@ export class Game {
 
     get_board_delta() : CellDelta[] {
         let play_area_delta = new Array<CellDelta>();
-        for (let c_row = 0; c_row < BOARD_SIZE; c_row++) {
-            for (let c_col = 0; c_col < BOARD_SIZE; c_col++) {
+        for (let c_row = 0; c_row < this.board_size; c_row++) {
+            for (let c_col = 0; c_col < this.board_size; c_col++) {
                 play_area_delta.push(this.get_cell_delta(c_row, c_col))            
             }
         }
@@ -239,7 +246,7 @@ export class Game {
 
     calculate_score(): Array<number> {
         let score = [0, 0];
-        for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+        for (let i = 0; i < this.board_size * this.board_size; i++) {
             if (this.board.play_area[i] == Cell.AlivePlayer0) {
                 score[0]++
             }

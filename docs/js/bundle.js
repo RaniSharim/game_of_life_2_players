@@ -11,7 +11,6 @@
         Cell[Cell["AlivePlayer0"] = 1] = "AlivePlayer0";
         Cell[Cell["AlivePlayer1"] = 2] = "AlivePlayer1";
     })(Cell || (Cell = {}));
-    const BOARD_SIZE = 10;
     class GetNeighborhoodResult {
         constructor(alive_player_1_count = 0, alive_player_2_count = 0) {
             this.alive_player_1_count = alive_player_1_count;
@@ -20,27 +19,28 @@
         get total() { return this.alive_player_1_count + this.alive_player_2_count; }
     }
     class Board {
-        constructor() {
+        constructor(board_size = 10) {
+            this.board_size = board_size;
             this.reset_play_area();
         }
         reset_play_area() {
-            this.play_area = new Array(BOARD_SIZE * BOARD_SIZE);
+            this.play_area = new Array(this.board_size * this.board_size);
             this.play_area.fill(Cell.Dead);
         }
         get_cell_xy(row, col) {
-            return this.play_area[row * BOARD_SIZE + col];
+            return this.play_area[row * this.board_size + col];
         }
         set_cell(cell_number, new_state, allow_override = false) {
             if (new_state == Cell.Dead && this.play_area[cell_number] == Cell.Dead) {
-                throw new Error(`Cannot kill a dead cell ${cell_number} = ${Math.floor(cell_number / BOARD_SIZE)} : ${cell_number % BOARD_SIZE}`);
+                throw new Error(`Cannot kill a dead cell ${cell_number} = ${Math.floor(cell_number / this.board_size)} : ${cell_number % this.board_size}`);
             }
             else if ((new_state == Cell.AlivePlayer0 || new_state == Cell.AlivePlayer1) && this.play_area[cell_number] != Cell.Dead && !allow_override) {
-                throw new Error(`Cannot spawn on occupied cell ${Math.floor(cell_number / BOARD_SIZE)} : ${cell_number % BOARD_SIZE}`);
+                throw new Error(`Cannot spawn on occupied cell ${Math.floor(cell_number / this.board_size)} : ${cell_number % this.board_size}`);
             }
             this.play_area[cell_number] = new_state;
         }
         set_cell_xy(row, col, new_state) {
-            let cell_number = row * BOARD_SIZE + col;
+            let cell_number = row * this.board_size + col;
             this.set_cell(cell_number, new_state, false);
         }
         get_neighborhood(row, col) {
@@ -48,7 +48,7 @@
             let alive_player_2_count = 0;
             for (let row_delta = -1; row_delta < 2; row_delta++) {
                 let c_row = row + row_delta;
-                if (c_row < 0 || c_row >= BOARD_SIZE) {
+                if (c_row < 0 || c_row >= this.board_size) {
                     continue;
                 }
                 for (let col_delta = -1; col_delta < 2; col_delta++) {
@@ -56,10 +56,10 @@
                         continue;
                     }
                     let c_col = col + col_delta;
-                    if (c_col < 0 || c_col >= BOARD_SIZE) {
+                    if (c_col < 0 || c_col >= this.board_size) {
                         continue;
                     }
-                    switch (this.play_area[c_row * BOARD_SIZE + c_col]) {
+                    switch (this.play_area[c_row * this.board_size + c_col]) {
                         case Cell.Dead: /* do nothing */
                             break;
                         case Cell.AlivePlayer0:
@@ -74,6 +74,7 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
+    //# sourceMappingURL=board.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -90,7 +91,7 @@
         GameState[GameState["End"] = 3] = "End";
     })(GameState || (GameState = {}));
     class Game {
-        constructor(board) {
+        constructor() {
             this.current_player = 0;
             this.left_to_place = [0, 0];
             this.score = [0, 0];
@@ -102,14 +103,17 @@
             this.max_first_player_placements = 20;
             this.max_second_player_placements = 21;
             this.max_round_placements = 0;
-            this.board = board;
+            this.board_size = 10;
+            this.board = new Board(this.board_size);
             this.init_game();
         }
-        set_config(max_first_player_placements, max_second_player_placements, max_round_placements) {
+        set_config(max_first_player_placements, max_second_player_placements, max_round_placements, board_size) {
             this.max_first_player_placements = max_first_player_placements;
             this.max_second_player_placements = max_second_player_placements;
             this.max_round_placements = max_round_placements;
             this.has_placement_limit = this.max_round_placements > 0;
+            this.board_size = board_size;
+            this.board = new Board(board_size);
         }
         init_game() {
             // Reset play area and history
@@ -122,6 +126,9 @@
             // Other player gets another placement
             this.left_to_place[1 - this.current_player] = this.max_second_player_placements;
             this.go_to_placement();
+        }
+        get_board_size() {
+            return this.board_size;
         }
         get_current_player() {
             return this.current_player;
@@ -184,7 +191,7 @@
             if (state1.score[0] != state2.score[0] || state1.score[1] != state2.score[1]) {
                 return false;
             }
-            for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+            for (let i = 0; i < this.board_size * this.board_size; i++) {
                 if (state1.board[i] != state2.board[i]) {
                     return false;
                 }
@@ -209,8 +216,8 @@
         }
         get_board_delta() {
             let play_area_delta = new Array();
-            for (let c_row = 0; c_row < BOARD_SIZE; c_row++) {
-                for (let c_col = 0; c_col < BOARD_SIZE; c_col++) {
+            for (let c_row = 0; c_row < this.board_size; c_row++) {
+                for (let c_col = 0; c_col < this.board_size; c_col++) {
                     play_area_delta.push(this.get_cell_delta(c_row, c_col));
                 }
             }
@@ -273,7 +280,7 @@
         }
         calculate_score() {
             let score = [0, 0];
-            for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+            for (let i = 0; i < this.board_size * this.board_size; i++) {
                 if (this.board.play_area[i] == Cell.AlivePlayer0) {
                     score[0]++;
                 }
@@ -285,6 +292,7 @@
             return score;
         }
     }
+    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -316,6 +324,7 @@
         }
         new_game() {
             this.game.init_game();
+            this.board_size = this.game.get_board_size();
             this.set_current_player_title();
             this.set_current_placements_left();
             this.set_current_score();
@@ -325,13 +334,19 @@
         create_board() {
             const board = document.getElementById("playboard");
             board.innerHTML = '';
-            for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let row = 0; row < this.board_size; row++) {
                 const dom_row = document.createElement("div");
                 dom_row.style.display = "flex";
                 dom_row.style.flexDirection = "row";
-                for (let col = 0; col < BOARD_SIZE; col++) {
+                for (let col = 0; col < this.board_size; col++) {
                     const dom_col = document.createElement("div");
-                    dom_col.className = "board_cell";
+                    dom_col.classList.add("board_cell");
+                    if (this.board_size == 10) {
+                        dom_col.classList.add("_10X10");
+                    }
+                    else {
+                        dom_col.classList.add("_15X15");
+                    }
                     dom_col.id = `${row}-${col}`;
                     dom_col.onclick = () => this.cell_clicked(row, col);
                     dom_row.appendChild(dom_col);
@@ -384,7 +399,8 @@
             const max_first_player_placements = document.getElementById("max_first_player_placements").value;
             const max_second_player_placements = document.getElementById("max_second_player_placements").value;
             const max_round_placements = document.getElementById("max_round_placements").value;
-            this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements));
+            const board_size = document.getElementById("board_size").value;
+            this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size));
             this.new_game();
         }
         cell_clicked(row, col) {
@@ -406,9 +422,9 @@
             }
         }
         change_colors_many(diff) {
-            for (let row = 0; row < BOARD_SIZE; row++) {
-                for (let col = 0; col < BOARD_SIZE; col++) {
-                    const delta = diff[row * BOARD_SIZE + col];
+            for (let row = 0; row < this.board_size; row++) {
+                for (let col = 0; col < this.board_size; col++) {
+                    const delta = diff[row * this.board_size + col];
                     if (delta == CellDelta.NoChange) {
                         continue;
                     }
@@ -514,10 +530,10 @@
         }
     }
 
-    const board = new Board();
-    const game = new Game(board);
+    const game = new Game();
     const ui = new UI(game);
     ui.new_game();
+    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map
