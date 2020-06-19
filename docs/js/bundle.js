@@ -237,7 +237,7 @@
             switch (neighborhood.total) {
                 case 2: return CellDelta.NoChange;
                 case 3: return CellDelta.NoChange;
-                case 4: return current_cell_alive ?
+                case 4: return current_cell_alive || neighborhood.alive_player_1_count == 0 || neighborhood.alive_player_2_count == 0 ?
                     CellDelta.NoChange :
                     neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 :
                         neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
@@ -254,7 +254,7 @@
                     CellDelta.NoChange :
                     neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ?
                         CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1;
-                case 4: return current_cell_alive ?
+                case 4: return current_cell_alive || neighborhood.alive_player_1_count == 0 || neighborhood.alive_player_2_count == 0 ?
                     CellDelta.NoChange :
                     neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 :
                         neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
