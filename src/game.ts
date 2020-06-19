@@ -15,6 +15,12 @@ export enum GameState {
     End
 }
 
+export enum BirthRules {
+    Normal,
+    ThreePlusOne,
+    Both
+}
+
 interface SavedGameState {
     board: Cell[];
     score: number[];
@@ -39,21 +45,35 @@ export class Game {
     max_second_player_placements = 21;
     max_round_placements = 0;
     board_size: number = 10;
+    birth_rules: BirthRules = BirthRules.Normal;
+
 
     undo_list: [number, number][];
+    get_cell_delta: (x: number, y: number) => CellDelta = this.get_cell_delta_normal;
 
     constructor() {
         this.board = new Board(this.board_size);
         this.init_game();
     }
 
-    set_config(max_first_player_placements: number, max_second_player_placements: number, max_round_placements: number, board_size: number) {
+    set_config(max_first_player_placements: number, max_second_player_placements: number, max_round_placements: number, board_size: number, birth_rules: BirthRules) {
         this.max_first_player_placements = max_first_player_placements;
         this.max_second_player_placements = max_second_player_placements;
         this.max_round_placements = max_round_placements;
         this.has_placement_limit = this.max_round_placements > 0;
         this.board_size = board_size;
         this.board = new Board(board_size);
+        this.birth_rules = birth_rules;
+
+        if (birth_rules == BirthRules.Normal) {
+            this.get_cell_delta = this.get_cell_delta_normal
+        }
+        else if (birth_rules == BirthRules.ThreePlusOne) {
+            this.get_cell_delta = this.get_cell_delta_threeplusone
+        }
+        else if (birth_rules == BirthRules.Both) {
+            this.get_cell_delta = this.get_cell_delta_both
+        }
     }
 
     init_game() {
@@ -156,7 +176,7 @@ export class Game {
         return this.old_states.some(old_state => this.compare_states(current_game_state, old_state))
     }
 
-    get_cell_delta(row:number, col:number): CellDelta {
+    get_cell_delta_normal(row:number, col:number): CellDelta {
         let neighborhood = this.board.get_neighborhood(row, col);
         let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead
 
@@ -166,6 +186,43 @@ export class Game {
                         CellDelta.NoChange : 
                         neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ?
                         CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1
+
+            default:  return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
+        }
+    }
+
+    get_cell_delta_threeplusone(row:number, col:number): CellDelta {
+        let neighborhood = this.board.get_neighborhood(row, col);
+        let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead
+
+        switch (neighborhood.total) {
+            case 2: return CellDelta.NoChange;
+            case 3: return CellDelta.NoChange;
+            case 4: return current_cell_alive ? 
+                        CellDelta.NoChange : 
+                        neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 : 
+                        neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
+                        CellDelta.NoChange
+
+            default:  return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
+        }
+    }
+
+    get_cell_delta_both(row:number, col:number): CellDelta {
+        let neighborhood = this.board.get_neighborhood(row, col);
+        let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead
+
+        switch (neighborhood.total) {
+            case 2: return CellDelta.NoChange;
+            case 3: return current_cell_alive ? 
+                        CellDelta.NoChange : 
+                        neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ?
+                        CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1
+            case 4: return current_cell_alive ? 
+                        CellDelta.NoChange : 
+                        neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 : 
+                        neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
+                        CellDelta.NoChange
 
             default:  return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
         }

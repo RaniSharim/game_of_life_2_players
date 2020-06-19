@@ -1,5 +1,4 @@
-import { Cell } from './board'
-import { Game, GameState, CellDelta } from './game'
+import { Game, GameState, CellDelta, BirthRules } from './game'
 export class UI {
 
     game: Game;
@@ -98,13 +97,24 @@ export class UI {
         random_place_button.onclick = () => this.random_placement();
     }
 
+    select_birth_rules(birth_rules_str: string) {
+        switch (birth_rules_str) {
+            case "normal" : return BirthRules.Normal;
+            case "three_plus_one" : return BirthRules.ThreePlusOne;
+            case "both" : return BirthRules.Both;
+            default: return BirthRules.Both;
+        }
+    }
+
     save_config() {
         const max_first_player_placements =  (<HTMLInputElement>document.getElementById("max_first_player_placements")).value;
         const max_second_player_placements =  (<HTMLInputElement>document.getElementById("max_second_player_placements")).value;
         const max_round_placements =  (<HTMLInputElement>document.getElementById("max_round_placements")).value;
         const board_size = (<HTMLSelectElement>document.getElementById("board_size")).value;
 
-        this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size));
+        const birth_rules = (<HTMLSelectElement>document.getElementById("birth_rules")).value;
+        
+        this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size), this.select_birth_rules(birth_rules));
         this.new_game();
     }
 

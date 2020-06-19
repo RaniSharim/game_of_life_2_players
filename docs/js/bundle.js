@@ -90,6 +90,12 @@
         GameState[GameState["Run"] = 2] = "Run";
         GameState[GameState["End"] = 3] = "End";
     })(GameState || (GameState = {}));
+    var BirthRules;
+    (function (BirthRules) {
+        BirthRules[BirthRules["Normal"] = 0] = "Normal";
+        BirthRules[BirthRules["ThreePlusOne"] = 1] = "ThreePlusOne";
+        BirthRules[BirthRules["Both"] = 2] = "Both";
+    })(BirthRules || (BirthRules = {}));
     class Game {
         constructor() {
             this.current_player = 0;
@@ -104,16 +110,28 @@
             this.max_second_player_placements = 21;
             this.max_round_placements = 0;
             this.board_size = 10;
+            this.birth_rules = BirthRules.Normal;
+            this.get_cell_delta = this.get_cell_delta_normal;
             this.board = new Board(this.board_size);
             this.init_game();
         }
-        set_config(max_first_player_placements, max_second_player_placements, max_round_placements, board_size) {
+        set_config(max_first_player_placements, max_second_player_placements, max_round_placements, board_size, birth_rules) {
             this.max_first_player_placements = max_first_player_placements;
             this.max_second_player_placements = max_second_player_placements;
             this.max_round_placements = max_round_placements;
             this.has_placement_limit = this.max_round_placements > 0;
             this.board_size = board_size;
             this.board = new Board(board_size);
+            this.birth_rules = birth_rules;
+            if (birth_rules == BirthRules.Normal) {
+                this.get_cell_delta = this.get_cell_delta_normal;
+            }
+            else if (birth_rules == BirthRules.ThreePlusOne) {
+                this.get_cell_delta = this.get_cell_delta_threeplusone;
+            }
+            else if (birth_rules == BirthRules.Both) {
+                this.get_cell_delta = this.get_cell_delta_both;
+            }
         }
         init_game() {
             // Reset play area and history
@@ -202,7 +220,7 @@
             const current_game_state = { board: this.board.play_area, score: this.score };
             return this.old_states.some(old_state => this.compare_states(current_game_state, old_state));
         }
-        get_cell_delta(row, col) {
+        get_cell_delta_normal(row, col) {
             let neighborhood = this.board.get_neighborhood(row, col);
             let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead;
             switch (neighborhood.total) {
@@ -211,6 +229,37 @@
                     CellDelta.NoChange :
                     neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ?
                         CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1;
+                default: return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
+            }
+        }
+        get_cell_delta_threeplusone(row, col) {
+            let neighborhood = this.board.get_neighborhood(row, col);
+            let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead;
+            switch (neighborhood.total) {
+                case 2: return CellDelta.NoChange;
+                case 3: return CellDelta.NoChange;
+                case 4: return current_cell_alive ?
+                    CellDelta.NoChange :
+                    neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 :
+                        neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
+                            CellDelta.NoChange;
+                default: return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
+            }
+        }
+        get_cell_delta_both(row, col) {
+            let neighborhood = this.board.get_neighborhood(row, col);
+            let current_cell_alive = this.board.get_cell_xy(row, col) != Cell.Dead;
+            switch (neighborhood.total) {
+                case 2: return CellDelta.NoChange;
+                case 3: return current_cell_alive ?
+                    CellDelta.NoChange :
+                    neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ?
+                        CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1;
+                case 4: return current_cell_alive ?
+                    CellDelta.NoChange :
+                    neighborhood.alive_player_1_count > neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer0 :
+                        neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
+                            CellDelta.NoChange;
                 default: return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
             }
         }
@@ -306,7 +355,6 @@
             return score;
         }
     }
-    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -409,12 +457,21 @@
             random_place_button.removeAttribute("disabled");
             random_place_button.onclick = () => this.random_placement();
         }
+        select_birth_rules(birth_rules_str) {
+            switch (birth_rules_str) {
+                case "normal": return BirthRules.Normal;
+                case "three_plus_one": return BirthRules.ThreePlusOne;
+                case "both": return BirthRules.Both;
+                default: return BirthRules.Both;
+            }
+        }
         save_config() {
             const max_first_player_placements = document.getElementById("max_first_player_placements").value;
             const max_second_player_placements = document.getElementById("max_second_player_placements").value;
             const max_round_placements = document.getElementById("max_round_placements").value;
             const board_size = document.getElementById("board_size").value;
-            this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size));
+            const birth_rules = document.getElementById("birth_rules").value;
+            this.game.set_config(parseInt(max_first_player_placements), parseInt(max_second_player_placements), parseInt(max_round_placements), parseInt(board_size), this.select_birth_rules(birth_rules));
             this.new_game();
         }
         cell_clicked(row, col) {
@@ -561,6 +618,7 @@
             }
         }
     }
+    //# sourceMappingURL=ui.js.map
 
     const game = new Game();
     const ui = new UI(game);
