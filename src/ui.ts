@@ -117,6 +117,7 @@ export class UI {
             this.change_color_at_xy(row, col, `selected_player_${current_player}`);
             this.set_current_placements_left();
             this.set_current_score();
+            document.getElementById("pass_player_button").classList.add("green_animate");
         }
         else if (this.game.can_undo_at_xy(row, col)) {
             this.game.undo_at_xy(row, col);
@@ -161,6 +162,8 @@ export class UI {
     }
 
     async pass_player() {
+        document.getElementById("pass_player_button").classList.remove("green_animate");
+
         this.fix_selections();
         this.game.pass_player();
         this.set_current_player_title();
