@@ -94,6 +94,7 @@
         BirthRules[BirthRules["Normal"] = 0] = "Normal";
         BirthRules[BirthRules["ThreePlusOne"] = 1] = "ThreePlusOne";
         BirthRules[BirthRules["Both"] = 2] = "Both";
+        BirthRules[BirthRules["P2Life"] = 3] = "P2Life";
     })(BirthRules || (BirthRules = {}));
     class Game {
         constructor() {
@@ -130,6 +131,9 @@
             }
             else if (birth_rules == BirthRules.Both) {
                 this.get_cell_delta = this.get_cell_delta_both;
+            }
+            else if (birth_rules == BirthRules.P2Life) {
+                this.get_cell_delta = this.get_cell_delta_p2life;
             }
         }
         init_game() {
@@ -260,6 +264,45 @@
                         neighborhood.alive_player_1_count < neighborhood.alive_player_2_count ? CellDelta.SpawnPlayer1 :
                             CellDelta.NoChange;
                 default: return current_cell_alive ? CellDelta.Die : CellDelta.NoChange;
+            }
+        }
+        get_cell_delta_p2life(row, col) {
+            let neighborhood = this.board.get_neighborhood(row, col);
+            let current_cell = this.board.get_cell_xy(row, col);
+            let current_cell_alive = current_cell != Cell.Dead;
+            if (current_cell_alive) {
+                const diff = Math.abs(neighborhood.alive_player_1_count - neighborhood.alive_player_2_count);
+                if (diff == 2 || diff == 3) {
+                    return CellDelta.NoChange;
+                }
+                else if (diff == 1) {
+                    if ((current_cell == Cell.AlivePlayer0 && neighborhood.alive_player_1_count >= 2) ||
+                        (current_cell == Cell.AlivePlayer1 && neighborhood.alive_player_2_count >= 2)) {
+                        return CellDelta.NoChange;
+                    }
+                    else {
+                        return CellDelta.Die;
+                    }
+                }
+                else {
+                    return CellDelta.Die;
+                }
+            }
+            // Spawn rules
+            else {
+                if (neighborhood.alive_player_1_count == 3 && neighborhood.alive_player_2_count != 3) {
+                    return CellDelta.SpawnPlayer0;
+                }
+                else if (neighborhood.alive_player_2_count == 3 && neighborhood.alive_player_1_count != 3) {
+                    return CellDelta.SpawnPlayer1;
+                }
+                else if (neighborhood.alive_player_1_count == 3 && neighborhood.alive_player_2_count == 3) {
+                    const rand = Math.random();
+                    return rand <= 0.5 ? CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1;
+                }
+                else {
+                    return CellDelta.NoChange;
+                }
             }
         }
         get_board_delta() {
@@ -456,7 +499,8 @@
                 case "normal": return BirthRules.Normal;
                 case "three_plus_one": return BirthRules.ThreePlusOne;
                 case "both": return BirthRules.Both;
-                default: return BirthRules.Both;
+                case "p2life": return BirthRules.P2Life;
+                default: return BirthRules.Normal;
             }
         }
         save_config() {

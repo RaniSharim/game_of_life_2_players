@@ -97,7 +97,8 @@ export class UI {
             case "normal" : return BirthRules.Normal;
             case "three_plus_one" : return BirthRules.ThreePlusOne;
             case "both" : return BirthRules.Both;
-            default: return BirthRules.Both;
+            case "p2life" : return BirthRules.P2Life;
+            default: return BirthRules.Normal;
         }
     }
 
