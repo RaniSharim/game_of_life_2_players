@@ -1,6 +1,8 @@
 
 import { Cell, Board } from './board'
 
+import { Replay, ReplayStepType, ReplayStep } from './replay'
+
 export enum CellDelta {
     NoChange,
     Die,
@@ -12,7 +14,8 @@ export enum GameState {
     InActive,
     Place,
     Run,
-    End
+    End,
+    Replay
 }
 
 export enum BirthRules {
@@ -50,6 +53,8 @@ export class Game {
 
 
     undo_list: [number, number][];
+    replay: Replay;
+
     get_cell_delta: (x: number, y: number) => CellDelta = this.get_cell_delta_normal;
 
     constructor() {
@@ -90,6 +95,9 @@ export class Game {
         this.current_player = Math.random() > 0.5 ? 0 : 1;
         // Other player gets another placement
         this.left_to_place[1 - this.current_player] = this.max_second_player_placements;
+
+        this.replay = new Replay(this.max_first_player_placements, this.max_second_player_placements, this.has_placement_limit,
+                                 this.max_round_placements, this.board_size, this.birth_rules);
 
         this.go_to_placement();
     }
@@ -134,6 +142,9 @@ export class Game {
         })
 
         this.calculate_score();
+
+        this.replay.replay_steps.push(new ReplayStep(ReplayStepType.Run, board_delta, this.current_player,
+                                      [...this.left_to_place], [...this.score], [...this.left_to_place_this_round]));
 
         console.log(`Comparing states`)
 
@@ -312,6 +323,13 @@ export class Game {
     go_to_end_game() {
         console.log(`State = end`);
         this.game_state = GameState.End;
+        this.replay.replay_steps.push(new ReplayStep(ReplayStepType.End, null, this.current_player,
+            [...this.left_to_place], [...this.score], [...this.left_to_place_this_round]));
+    }
+
+    go_to_replay() {
+        console.log(`State = replay`);
+        this.game_state = GameState.Replay;
     }
 
     can_place_at_xy(row:number, col:number): boolean {
@@ -345,7 +363,25 @@ export class Game {
         this.undo_list = this.undo_list.filter(([r, c]) => r !== row || c !== col)
     }
     
+    convert_undolist_to_board_delta(): CellDelta[] {
+        const delta = [];
+
+        for (let i = 0; i < this.board_size * this.board_size; i++) {
+            delta.push(CellDelta.NoChange);
+        }
+
+        this.undo_list.forEach(([row, col]) => {
+            delta[row*this.board_size + col] = this.current_player == 0 ? CellDelta.SpawnPlayer0 : CellDelta.SpawnPlayer1;
+        });
+
+        return delta;
+    }
+
     pass_player() {
+
+        this.replay.replay_steps.push(new ReplayStep(ReplayStepType.Placement, this.convert_undolist_to_board_delta(), this.current_player,
+        [...this.left_to_place], [...this.score], [...this.left_to_place_this_round]));
+
         this.undo_list = new Array<[number, number]>();
 
         if (!this.current_player_placed && !this.prev_player_placed) {
