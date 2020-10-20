@@ -20,7 +20,7 @@ module.exports = {
             ],
             outputFolder:'docs'
         }),
-        serve('docs'),
-        livereload()
+        // serve('docs'),
+        // livereload()
     ]
 };

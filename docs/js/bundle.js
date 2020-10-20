@@ -1,5 +1,3 @@
-
-(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (factory) {
     typeof define === 'function' && define.amd ? define(factory) :
     factory();
@@ -74,7 +72,6 @@
             return new GetNeighborhoodResult(alive_player_1_count, alive_player_2_count);
         }
     }
-    //# sourceMappingURL=board.js.map
 
     class Replay {
         constructor(max_first_player_placements, max_second_player_placements, has_placement_limit, max_round_placements, board_size, birth_rules) {
@@ -103,7 +100,6 @@
             this.left_to_place_this_round = left_to_place_this_round;
         }
     }
-    //# sourceMappingURL=replay.js.map
 
     var CellDelta;
     (function (CellDelta) {
@@ -446,7 +442,6 @@
             return score;
         }
     }
-    //# sourceMappingURL=game.js.map
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -818,7 +813,6 @@
     const game = new Game();
     const ui = new UI(game);
     ui.new_game();
-    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=bundle.js.map
