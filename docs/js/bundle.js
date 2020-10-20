@@ -92,7 +92,10 @@
         }
         Board.prototype.reset_play_area = function () {
             this.play_area = new Array(this.board_size * this.board_size);
-            this.play_area.fill(Cell.Dead);
+            //this.play_area.fill(Cell.Dead);
+            for (var i = 0; i < this.board_size * this.board_size; i++) {
+                this.play_area[i] = Cell.Dead;
+            }
         };
         Board.prototype.get_cell_xy = function (row, col) {
             return this.play_area[row * this.board_size + col];

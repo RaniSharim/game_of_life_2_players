@@ -18,7 +18,10 @@ export class Board {
 
     reset_play_area() {
         this.play_area = new Array<Cell>(this.board_size * this.board_size);
-        this.play_area.fill(Cell.Dead);       
+        //this.play_area.fill(Cell.Dead);
+		for (var i = 0; i < this.board_size * this.board_size; i++) {
+			this.play_area[i] = Cell.Dead;
+		}
     }
 
     get_cell_xy(row: number, col: number) {
