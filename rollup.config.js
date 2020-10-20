@@ -12,10 +12,7 @@ module.exports = {
       sourcemap: true
     },
     plugins: [
-        typescript({
-			"target": "es5",
-			// "esModuleInterop"
-		}) ,
+        typescript(),
         copy({
             targets: [
                 'src/www/index.html',

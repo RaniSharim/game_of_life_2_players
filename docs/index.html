@@ -5,47 +5,52 @@
         <link rel="stylesheet" href="style.css">
         <title>Game of life, 2 player version</title>        
     </head>
-    <body>    
-        <div class="board">
-            <div style="display:flex; flex-direction: column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
-                <div  id="instructions_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">How to play ? (click for instructions)</div>
-                <div id="instructions" style="display: none;">
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">1. Both players take turns placing tiles on the board, or pass. (Second player gets one extra tile).</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">2. Once both player pass (or can't place), the game of life begins!</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply - a "live" tile with less than 2, or more than 3 neighbors will "die".</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;an empty tile with 3 neighbors will become "alive", with it's color determined by its neighborhood colors.</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;Variations are available: either 3 cells of one color and one of the other, a mix of both or P2life (<a target='_blank' href='https://arxiv.org/abs/cond-mat/0207679'>Paper</a>).</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">4. Once one player is eradicated from the board, or the game detects a loop, both players can place tiles again.</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">5. The game ends if it stops and no player can place new tiles,</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;or one player was eradicated from the board and can't place any more tiles.</div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">6. The winner is the last left on the board, or otherwise whoever has the most alive cells.</div>
-                </div>
-            </div>
-        </div>
-        <div class="board">
-            <div style="display:flex; flex-direction:column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
-                <div  id="configuration_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Configuration (click to expand)</div>
-                <div id="configuration" style="display: none;">
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for first player</span> <input type="number" value="20" id="max_first_player_placements" /></div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for second player</span> <input type="number" id="max_second_player_placements" value="21" /></div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Max placements per round (0 = unlimited)</span> <input type="number" value="0" id="max_round_placements"/></div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Board size</span><select id="board_size"><option value="10">10X10</option><option value="15">15X15</option><option value="20">20X20</option></select></div>
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Birth rules</span><select id="birth_rules"><option value="normal">Normal (3 of any color)</option><option value="three_plus_one">3 of one color, 1 of other</option><option value="both">A mix of both</option><option value="p2life">P2life</option></select></div>
-                    <div style="margin-bottom: 2px"><button id="save_config" class="button small">Save</button></div>
-                </div>
-            </div>
-        </div>
-        <div class="board">
-            <div style="display:flex; flex-direction:column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
-                <div  id="replay_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Replay (click to expand)</div>
-                <div id="replay" style="display: none;">
-                    <div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Replays</span><select id="replays_avaliable"></select></div>
-                    <div style="margin-bottom: 2px"><button id="run_replay" class="button small">Run replay</button></div>
-                </div>
-            </div>
-        </div>        
-        <div class="board">
+    <body>
+		<noscript>
+                <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Sorry, this game requires JavaScript enabled in order to work</div>
+		</noscript>
+        <div id="game_main" style="display: none">
+			<div class="board">
+				<div style="display:flex; flex-direction: column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
+					<div  id="instructions_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">How to play ? (click for instructions)</div>
+					<div id="instructions" style="display: none;">
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">1. Both players take turns placing tiles on the board, or pass. (Second player gets one extra tile).</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">2. Once both player pass (or can't place), the game of life begins!</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">3. Normal game of life rules apply - a "live" tile with less than 2, or more than 3 neighbors will "die".</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;an empty tile with 3 neighbors will become "alive", with it's color determined by its neighborhood colors.</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;Variations are available: either 3 cells of one color and one of the other, a mix of both or P2life (<a target='_blank' href='https://arxiv.org/abs/cond-mat/0207679'>Paper</a>).</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">4. Once one player is eradicated from the board, or the game detects a loop, both players can place tiles again.</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;starting with whomever has more placements left</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">5. The game ends if it stops and no player can place new tiles,</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;or one player was eradicated from the board and can't place any more tiles.</div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px">6. The winner is the last left on the board, or otherwise whoever has the most alive cells.</div>
+					</div>
+				</div>
+			</div>
+			<div class="board">
+				<div style="display:flex; flex-direction:column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
+					<div  id="configuration_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Configuration (click to expand)</div>
+					<div id="configuration" style="display: none;">
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for first player</span> <input type="number" value="20" id="max_first_player_placements" /></div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Total placements for second player</span> <input type="number" id="max_second_player_placements" value="21" /></div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Max placements per round (0 = unlimited)</span> <input type="number" value="0" id="max_round_placements"/></div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Board size</span><select id="board_size"><option value="10">10X10</option><option value="15">15X15</option><option value="20">20X20</option></select></div>
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Birth rules</span><select id="birth_rules"><option value="normal">Normal (3 of any color)</option><option value="three_plus_one">3 of one color, 1 of other</option><option value="both">A mix of both</option><option value="p2life">P2life</option></select></div>
+						<div style="margin-bottom: 2px"><button id="save_config" class="button small">Save</button></div>
+					</div>
+				</div>
+			</div>
+			<div class="board">
+				<div style="display:flex; flex-direction:column; background-color: bisque; padding-left: 5px; padding-right: 5px;">
+					<div  id="replay_toggle" style="font-weight: bold; font-size: 22px; margin-bottom: 10px; cursor: pointer;">Replay (click to expand)</div>
+					<div id="replay" style="display: none;">
+						<div style="font-weight: bold; font-size: 18px; margin-bottom: 2px"><span style="display: inline-block; width:350px">Replays</span><select id="replays_avaliable"></select></div>
+						<div style="margin-bottom: 2px"><button id="run_replay" class="button small">Run replay</button></div>
+					</div>
+				</div>
+			</div>        
+			<div class="board">
+		</div>
             <div id="playboard" style="display:flex; flex-direction: column;"></div>
             <div id="panel" style="display:flex; flex-direction: column; padding-left:20px;">
                 <div class="panel">
@@ -78,5 +83,6 @@
             </div>
         </div>       
     </body>
+	<script type="text/javascript"> document.getElementById("game_main").style.display = "block"; </script>
     <script src="./js/bundle.js"></script>
 </html>
